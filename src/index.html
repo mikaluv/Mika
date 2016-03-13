@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>poi</title>
+  <link rel="stylesheet" href="./assets/css/app.css">
+  <link rel="stylesheet" id="layout-css" href="./assets/css/layout.horizontal.css">
+  <link rel="stylesheet" id="bootstrap-css">
+  <link rel="stylesheet" id="fontawesome-css">
+  <script>
+    require('coffee-script/register');
+    require('./views/env');
+    require('./views/battle-env');
+  </script>
+</head>
+<body>
+  <poi-css-injector></poi-css-injector>
+  <poi-main>
+    <kan-game>
+      <div id="webview-wrapper" style="height: 480px">
+        <webview src="" ondrop="event.preventDefault();" plugins disablewebsecurity style="height: 480px;"></webview>
+      </div>
+      <hr>
+      <poi-info>
+        <poi-control></poi-control>
+        <poi-alert></poi-alert>
+        <poi-map-reminder></poi-map-reminder>
+      </poi-info>
+      <hr>
+    </kan-game>
+    <poi-modal>
+      <poi-modal-trigger />
+    </poi-modal>
+    <poi-app>
+      <div id='poi-app-container'>
+        <poi-nav>
+          <poi-nav-tabs />
+        </poi-nav>
+      </div>
+    </poi-app>
+  </poi-main>
+  <script>
+    require('./views/app');
+    require('./views/services');
+  </script>
+</body>
+</html>

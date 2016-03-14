@@ -54,6 +54,9 @@ window.timeToString = (milliseconds) ->
   date = new Date(milliseconds)
   date.toTimeString().slice(0, 8)  # HH:mm:ss
 
+window.defaultTo = (val, defaultVal) ->
+  if val? then val else defaultVal
+
 ## window.notify
 # msg=null: Sound-only notification.
 NOTIFY_DEFAULT_ICON = path.join(ROOT, 'assets', 'icons', 'icon.png')

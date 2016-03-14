@@ -55,6 +55,8 @@
     "react-bootstrap": "^0.28.2",
     "react-dom": "^0.14.6",
     "react-fontawesome": "^0.3.3",
+    "react-redux": "^4.4.1",
+    "redux": "^3.3.1",
     "request": "^2.67.0",
     "semver": "^5.1.0",
     "socks5-client": "^1.1.0",

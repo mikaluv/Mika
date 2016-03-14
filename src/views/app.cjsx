@@ -5,7 +5,11 @@ debugger if dbg.h.brk?.isEnabled()
 {config, toggleModal} = window
 fs = require 'fs-extra'
 path = require 'path-extra'
-require 'bootstrap'
+{createStore} = require 'redux'
+{Provider} = require 'react-redux'
+
+store = createStore require('./reducers'), {}
+{onGameResponseActionCreator} = require './actions'
 
 __ = window.i18n.others.__.bind(i18n.others)
 __n = window.i18n.others.__n.bind(i18n.others)
@@ -43,6 +47,10 @@ muter = setInterval =>
     clearInterval muter
 , 1000
 
+window.addEventListener 'game.response', (event) ->
+  {path, body, postBody} = event.detail
+  onGameResponseActionCreator(store)(path, body, postBody)
+
 # Custom css injector
 CustomCssInjector = React.createClass
   render: ->
@@ -54,5 +62,9 @@ ReactDOM.render <PoiAlert id='poi-alert' />, $('poi-alert')
 ReactDOM.render <PoiMapReminder id='poi-map-reminder'/>, $('poi-map-reminder')
 ReactDOM.render <PoiControl />, $('poi-control')
 ReactDOM.render <ModalTrigger />, $('poi-modal-trigger')
-ReactDOM.render <ControlledTabArea />, $('poi-nav-tabs')
+ReactDOM.render (
+  <Provider store={store}>
+    <ControlledTabArea />
+  </Provider>
+), $('poi-nav-tabs')
 ReactDOM.render <CustomCssInjector />, $('poi-css-injector')

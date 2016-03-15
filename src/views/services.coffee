@@ -101,5 +101,5 @@ window.addEventListener 'game.response', (event) ->
   {path, body, postBody} = event.detail
   onGameResponse(store)(path, body, postBody)
 
-setTimeout (-> onTimeTick(store)()), 1000
+setInterval (-> onTimeTick(store)()), 1000
   

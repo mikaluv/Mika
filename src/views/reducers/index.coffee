@@ -10,7 +10,7 @@ mergeInfo = (state={}, action) ->
 
 refreshTick = (state=Date.now(), action) ->
   if action.type == actions.ON_TIME_TICK
-    Date.now()
+    return Date.now()
   state
 
 composeActionsFactory = (state, action) -> (reducers) ->

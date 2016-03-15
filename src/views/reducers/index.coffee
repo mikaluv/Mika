@@ -1,10 +1,17 @@
+{combineReducers} = require 'redux'
 actions = require '../actions'
 
-onGameResponse = (state, action) ->
+mergeInfo = (state={}, action) ->
   if action.type == actions.ON_GAME_RESPONSE
     {path, response, request} = action
     if path.indexOf '/battle' != 0
-      Object.assign {}, state, action.response
+      return Object.assign {}, state, action.response
+  state
+
+refreshTick = (state=Date.now(), action) ->
+  if action.type == actions.ON_TIME_TICK
+    Date.now()
+  state
 
 composeActionsFactory = (state, action) -> (reducers) ->
   for reducer in reducers
@@ -12,8 +19,6 @@ composeActionsFactory = (state, action) -> (reducers) ->
     state = newState ?= state
   state
 
-module.exports = (state, action) ->
-  compose = composeActionsFactory state, action
-  compose [
-    onGameResponse
-  ]
+module.exports = combineReducers
+  tick: refreshTick
+  info: mergeInfo

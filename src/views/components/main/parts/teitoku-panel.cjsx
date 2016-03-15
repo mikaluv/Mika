@@ -13,16 +13,8 @@ getMaterialImage = (idx) ->
   return "file://#{ROOT}/assets/img/material/0#{idx}.png"
 
 TeitokuPanel = connect((state) -> 
-  _.pick state, 'name', 'level', 'exp', 'sword', 'equip', 'max_sword', 'max_equip'
+  _.pick state.info, 'name', 'level', 'exp', 'sword', 'equip', 'max_sword', 'max_equip'
 ) React.createClass
-  getInitialState: ->
-    show: true
-  shouldComponentUpdate: (nextProps, nextState) ->
-    nextState.show
-  handleVisibleResponse: (e) ->
-    {visible} = e.detail
-    @setState
-      show: visible
   render: ->
     styleCommon =
       minWidth: '60px'
@@ -32,7 +24,6 @@ TeitokuPanel = connect((state) ->
     styleR = Object.assign {}, styleCommon, {textAlign: 'left'}
     totalExp = defaultTo @props.exp, '??'
     nextExp = if @props.exp? && @props.level? then totalExpList[@props.level]-@props.exp else '??'
-    debugger;
     swordNum = if @props.sword? then Object.keys(@props.sword).length else '??'
     swordMax = defaultTo @props.max_sword, '??'
     equipNum = if @props.equip? then Object.keys(@props.equip).length else '??'

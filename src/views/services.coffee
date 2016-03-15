@@ -3,6 +3,11 @@
 __ = window.i18n.others.__.bind(i18n.others)
 __n = window.i18n.others.__n.bind(i18n.others)
 
+{
+  onGameResponse, 
+  onTimeTick
+} = require './actions'
+
 require './services/update'
 require './services/layout'
 require './services/welcome'
@@ -91,3 +96,10 @@ window.addEventListener 'network.invalid.code', (e) ->
   error __ 'Network error: HTTP %s', code
 window.addEventListener 'network.error', ->
   error __ 'Connection failed.'
+
+window.addEventListener 'game.response', (event) ->
+  {path, body, postBody} = event.detail
+  onGameResponse(store)(path, body, postBody)
+
+setTimeout (-> onTimeTick(store)()), 1000
+  

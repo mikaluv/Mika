@@ -8,8 +8,7 @@ path = require 'path-extra'
 {createStore} = require 'redux'
 {Provider} = require 'react-redux'
 
-store = createStore require('./reducers'), {}
-{onGameResponseActionCreator} = require './actions'
+window.store = createStore require('./reducers'), {}
 
 __ = window.i18n.others.__.bind(i18n.others)
 __n = window.i18n.others.__n.bind(i18n.others)
@@ -46,10 +45,6 @@ muter = setInterval =>
       $('kan-game webview').setAudioMuted true
     clearInterval muter
 , 1000
-
-window.addEventListener 'game.response', (event) ->
-  {path, body, postBody} = event.detail
-  onGameResponseActionCreator(store)(path, body, postBody)
 
 # Custom css injector
 CustomCssInjector = React.createClass

@@ -1,9 +1,15 @@
 
 exports = {}
 
-exports.ON_GAME_RESPONSE = 'ON_GAME_RESPONSE'
+exports.ON_TIME_TICK = 'ON_TIME_TICK'
+exports.onTimeTick = (store) ->
+  () ->
+    store.dispatch {
+      type: exports.ON_TIME_TICK
+    }
 
-exports.onGameResponseActionCreator = (store) ->
+exports.ON_GAME_RESPONSE = 'ON_GAME_RESPONSE'
+exports.onGameResponse = (store) ->
   (path, response, request) ->
     store.dispatch {
       type: exports.ON_GAME_RESPONSE
@@ -11,5 +17,5 @@ exports.onGameResponseActionCreator = (store) ->
       response 
       request
     }
-  
+
 module.exports = exports

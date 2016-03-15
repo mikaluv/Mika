@@ -54,7 +54,7 @@ CountdownLabel = connect((state) ->
     </OverlayTrigger>
 
 MissionPanel = connect((state) -> 
-  _.pick state.info, 'party', 'summary'
+  conquest: state.conquest
 ) React.createClass
   notify: (deckName) ->
     notify "#{deckName} #{__ 'mission complete'}",
@@ -65,21 +65,22 @@ MissionPanel = connect((state) ->
     <Panel bsStyle="default">
     {
       for i in [2..4]
-        party = @props.party?[i]
+        party = @props.conquest?[i]
         if party?
+          debugger;
           name = switch party.status.toString()
             when '0'
               'Locked'
             when '1'
               'Idle'
             when '2'
-              if @props.summary?[i]?
-                conquest_names[@props.summary[i].field_id - 1]
+              if party.field_id?[i]?
+                conquest_names[party.field_id - 1]
               else
                 'Sally party '+i
         else
           name = 'Idle'
-        finishAt = @props.party?[i]?.finished_at
+        finishAt = party?.finish_at
         if finishAt
           finishAt = +moment(finishAt + '+0900')
         <div className="panel-item mission-item" key={i} >

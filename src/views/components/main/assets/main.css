@@ -56,7 +56,7 @@
   min-height: 328px;
 }
 #MainView .resource-panel-area-horizontal{
-  height: 96px;
+  /*height: 96px;*/
 }
 
 #MainView .mission-panel-area-horizontal {

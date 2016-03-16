@@ -9,9 +9,6 @@ order = if layout == 'horizontal' or window.doubleTabbed then [1, 3, 5, 7, 2, 4,
 
 totalExpList = require path.join ROOT, 'assets/data/player_exp_list.json'
 
-getMaterialImage = (idx) ->
-  return "file://#{ROOT}/assets/img/material/0#{idx}.png"
-
 TeitokuPanel = connect((state) -> 
   _.pick state.info, 'name', 'level', 'exp', 'sword', 'equip', 'max_sword', 'max_equip'
 ) React.createClass

@@ -23,7 +23,6 @@ NdockPanel = connect((state) ->
       title: __ 'Docking'
       icon: @repairIcon
   render: ->
-    debugger;
     <div>
     {
       for i in [1..4]

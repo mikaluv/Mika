@@ -53,24 +53,22 @@ module.exports =
     if shipId == escapeId || shipId == towId
       return status = 0
     # repairing
-    else if shipId in _ndocks
-      return status = 1
-    # supply
-    else if miniFlag and (Math.min _ships[shipId].api_fuel / _ships[shipId].api_fuel_max * 100, _ships[shipId].api_bull / _ships[shipId].api_bull_max * 100) < 100
-      return status = 6
+    #else if shipId in _ndocks
+    #  return status = 1
+
     # special 1 locked phase 1
-    else if _ships[shipId].api_sally_area == 1
-      return status = 2
-    # special 2 locked phase 2
-    else if _ships[shipId].api_sally_area == 2
-      return status = 3
-    # special 3 locked phase 3
-    else if  _ships[shipId].api_sally_area == 3
-      return status = 4
-    # special 4 locked phase 4
-    else if _ships[shipId].api_sally_area == 4
-      return status = 5
-    return status
+    #else if _ships[shipId].api_sally_area == 1
+    #  return status = 2
+    ## special 2 locked phase 2
+    #else if _ships[shipId].api_sally_area == 2
+    #  return status = 3
+    ## special 3 locked phase 3
+    #else if  _ships[shipId].api_sally_area == 3
+    #  return status = 4
+    ## special 4 locked phase 4
+    #else if _ships[shipId].api_sally_area == 4
+    #  return status = 5
+    #return status
 
   getHpStyle: (percent) ->
     if percent <= 25

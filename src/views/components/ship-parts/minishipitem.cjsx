@@ -9,7 +9,9 @@ __n = i18n.main.__n.bind(i18n.main)
 StatusLabel = require './statuslabel'
 {SlotitemIcon} = require '../etc/icon'
 
-{getHpStyle, getStatusStyle, getShipStatus, BaseShipData} = require './utils'
+{getHpStyle, getShipStatus, getStatusStyle, getShipStatus, BaseShipData} = require './utils'
+sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
+sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
 
 getFontStyle = (theme)  ->
   if window.isDarkTheme then color: '#FFF' else color: '#000'
@@ -47,45 +49,49 @@ MiniShipRow = React.createClass
   shouldComponentUpdate: (nextProps, nextState) ->
     not _.isEqual nextProps, @props
   render: ->
+    status = getShipStatus true, @props.shipData
+    statusStyle = getStatusStyle status
+    {level, exp, sword_id, hp, hp_max, fatigue} = @props.shipData
+    nextExp = sword_exp_list[level] - exp
     <div className="ship-tile">
       <OverlayTrigger placement={if (!window.doubleTabbed) && (window.layout == 'vertical') then 'left' else 'right'} overlay={
         <Tooltip id="ship-pop-#{@props.key}-#{@props.shipIndex}" className="ship-pop #{if @props.shipData.slotItemExist then '' else 'hidden'}">
           <div className="item-name">
-            <Slotitems data={@props.shipData.slotItems} />
+            <Slotitems data={@props.shipData?.slotItems} />
           </div>
         </Tooltip>
       }>
         <div className="ship-item">
           <OverlayTrigger placement='top' overlay={
             <Tooltip id="miniship-exp-#{@props.key}-#{@props.shipIndex}">
-              Next. {@props.shipData.nextEXP}
+              Next. {nextExp}
             </Tooltip>
           }>
             <div className="ship-info">
-              <span className="ship-name" style={getStatusStyle @props.label}>
-                {i18n.resources.__ @props.shipData.name}
+              <span className="ship-name" style={statusStyle}>
+                {sword_names[sword_id]}
               </span>
-              <span className="ship-lv-text top-space" style={getStatusStyle @props.label}>
-                Lv. {@props.shipData.lv}
+              <span className="ship-lv-text top-space" style={statusStyle}>
+                Lv. {level}
               </span>
             </div>
           </OverlayTrigger>
           <div className="ship-stat">
             <div className="div-row">
-              <span className="ship-hp" style={getStatusStyle @props.label}>
-                {@props.shipData.nowHp} / {@props.shipData.maxHp}
+              <span className="ship-hp" style={statusStyle}>
+                {hp} / {hp_max}
               </span>
               <div className="status-label">
-                <StatusLabel label={@props.label} />
+                <StatusLabel label={status} />
               </div>
-              <div style={getStatusStyle @props.label}>
-                <span className={"ship-cond " + window.getCondStyle(@props.shipData.cond)}>
-                  ★{@props.shipData.cond}
+              <div style={statusStyle}>
+                <span className={"ship-cond " + window.getCondStyle(fatigue)}>
+                  ★{fatigue}
                 </span>
               </div>
             </div>
-            <span className="hp-progress top-space" style={getStatusStyle @props.label}>
-              <ProgressBar bsStyle={getHpStyle @props.shipData.nowHp / @props.shipData.maxHp * 100} now={@props.shipData.nowHp / @props.shipData.maxHp * 100} />
+            <span className="hp-progress top-space" style={statusStyle}>
+              <ProgressBar bsStyle={getHpStyle hp / hp_max * 100} now={hp / hp_max * 100} />
             </span>
           </div>
         </div>

@@ -195,7 +195,7 @@ module.exports =
           {
             for deck, i in @state.decks
               <div className="ship-deck" key={i}>
-                <PaneBody
+                <PaneBody(i)
                   key={i}
                   deckIndex={i}
                   deck={@state.decks[i]}

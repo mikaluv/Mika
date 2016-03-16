@@ -4,6 +4,7 @@ path =  require 'path-extra'
 {$ships, $shipTypes, _ships} = window
 {Button, ButtonGroup} = ReactBootstrap
 {ProgressBar, OverlayTrigger, Tooltip, Alert, Overlay, Label, Panel, Popover} = ReactBootstrap
+{connect} = require 'react-redux'
 __ = i18n.main.__.bind(i18n.main)
 __n = i18n.main.__n.bind(i18n.main)
 
@@ -58,7 +59,8 @@ module.exports =
   priority: 100000.1
   displayName: <span><FontAwesome key={0} name='bars' /> Mini舰队</span>
   description: '舰队展示页面，展示舰队详情信息'
-  reactClass: React.createClass
+  reactClass: connect((state) -> {}
+  ) React.createClass
     getInitialState: ->
       names: ["#{__ 'I'}", "#{__ 'II'}", "#{__ 'III'}", "#{__ 'IV'}"]
       fullnames: [__('No.%s fleet', 1), __('No.%s fleet', 2), __('No.%s fleet', 3), __('No.%s fleet', 4)]
@@ -124,14 +126,12 @@ module.exports =
             <div className="ship-tab-content"
                  style={left: "-#{@state.activeDeck}00%"}>
             {
-              for deck, i in @state.decks
+              for i in [1..4]
+                PaneBodyMini_ = PaneBodyMini i
                 <div className="ship-deck" className="ship-tabpane" key={i}>
-                  <PaneBodyMini
+                  <PaneBodyMini_
                     key={i}
-                    deckIndex={i}
-                    deck={@state.decks[i]}
                     activeDeck={@state.activeDeck}
-                    deckName={@state.names[i]}
                   />
                 </div>
             }

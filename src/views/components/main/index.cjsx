@@ -70,9 +70,11 @@ module.exports =
                 <div className="mission-panel mission-panel-area-horizontal" ref="missionPanel">
                   <MissionPanel />
                 </div>
-                <div className="task-panel task-panel-area-horizontal" ref="taskPanel">
-                  <TaskPanel />
-                </div>
+                { undefined
+                  #<div className="task-panel task-panel-area-horizontal" ref="taskPanel">
+                  #  <TaskPanel />
+                  #</div>
+                }
               </div>
             </div>
           </div>
@@ -87,9 +89,11 @@ module.exports =
                   <div className="panel-col resource-panel resource-panel-area-vertical" ref="resourcePanel">
                     <ResourcePanel />
                   </div>
-                  <div className="panel-col task-panel-area task-panel-area-vertical" ref="taskPanel">
-                    <TaskPanel />
-                  </div>
+                  { undefined
+                    #<div className="task-panel task-panel-area-horizontal" ref="taskPanel">
+                    #  <TaskPanel />
+                    #</div>
+                  }
                 </div>
                 <div className="panel-col half right-bottom-area">
                   <Panel className="combined-panels panel-col combined-panels-area-vertical">

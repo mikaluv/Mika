@@ -1,106 +1,56 @@
 {ROOT, layout, _, $, $$, React, ReactBootstrap} = window
 {Label, OverlayTrigger, Tooltip} = ReactBootstrap
-{join} = require 'path-extra'
+{connect} = require 'react-redux'
+path = require 'path-extra'
+moment = require 'moment'
 __ = i18n.main.__.bind(i18n.main)
 __n = i18n.main.__n.bind(i18n.main)
 
-CountdownTimer = require './countdown-timer'
-CountdownLabel = React.createClass
-  getLabelStyle: (timeRemaining) ->
-    switch
-      when timeRemaining > 600 then 'primary'
-      when timeRemaining > 60  then 'warning'
-      when timeRemaining >= 0  then 'success'
-      else 'default'
-  getInitialState: ->
-    @notify = _.once @props.notify
-    style: @getLabelStyle(CountdownTimer.getTimeRemaining @props.completeTime)
-  componentWillReceiveProps: (nextProps) ->
-    if nextProps.completeTime isnt @props.completeTime
-      @notify = _.once nextProps.notify
-      @setState
-        style: @getLabelStyle(CountdownTimer.getTimeRemaining nextProps.completeTime)
-  shouldComponentUpdate: (nextProps, nextState) ->
-    nextProps.completeTime isnt @props.completeTime or nextState.style isnt @state.style
-  tick: (timeRemaining) ->
-    @notify() if timeRemaining <= 60
+CountdownLabel = require './countdown-label.cjsx'
 
-    style = @getLabelStyle timeRemaining
-    @setState {style: style} if style isnt @state.style
-  render: ->
-    <OverlayTrigger placement='left' overlay={
-      switch @state.style
-        when 'primary', 'warning'
-          <Tooltip id="ndock-finish-by-#{@props.dockIndex}">
-            <strong>{__ 'Finish by : '}</strong>{timeToString @props.completeTime}
-          </Tooltip>
-        else
-          <span />
-    }>
-      <Label className="ndock-timer" bsStyle={@state.style}>
-      {
-        if @props.completeTime >= 0
-          <CountdownTimer countdownId={"ndock-#{@props.dockIndex+1}"}
-                          completeTime={@props.completeTime}
-                          tickCallback={@tick} />
-      }
-      </Label>
-    </OverlayTrigger>
+sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
 
-
-class NDockInfo
-  constructor: (ndockApi) ->
-    if ndockApi? then @update(ndockApi) else @empty()
-  empty: ->
-    @name = __ 'Empty'
-    @completeTime = -1
-  setLocked: ->
-    @name = __ 'Locked'
-    @completeTime = -1
-  update: (ndockApi) ->
-    switch ndockApi.api_state
-      when -1 then @setLocked()
-      when 0  then @empty()
-      when 1
-        @name = window._ships[ndockApi.api_ship_id].api_name
-        @completeTime = ndockApi.api_complete_time
-
-NdockPanel = React.createClass
-  getInitialState: ->
-    docks: [1..4].map () -> new NDockInfo
-  handleResponse: (e) ->
-    {path, body, postBody} = e.detail
-    switch path
-      when '/kcsapi/api_port/port', '/kcsapi/api_get_member/ndock'
-        ndocks = if path is '/kcsapi/api_port/port' then body.api_ndock else body
-        docks = ndocks.map (ndock) -> new NDockInfo(ndock)
-        if !_.isEqual docks, @state.docks
-          @setState
-            docks: docks
-      when '/kcsapi/api_req_nyukyo/speedchange'
-        docks = @state.docks.slice()
-        docks[postBody.api_ndock_id - 1] = new NDockInfo
-        @setState
-          docks: docks
-  componentDidMount: ->
-    window.addEventListener 'game.response', @handleResponse
-  componentWillUnmount: ->
-    window.removeEventListener 'game.response', @handleResponse
-  repairIcon: join(ROOT, 'assets', 'img', 'operation', 'repair.png')
+NdockPanel = connect((state) -> 
+  repair: state.repair
+  repair_slot: state.info.repair_slot
+  sword: state.info.sword
+  party: state.info.party
+) React.createClass
+  repairIcon: path.join(ROOT, 'assets', 'img', 'operation', 'repair.png')
   notify: (dockName) ->
     notify "#{i18n.resources.__ dockName} #{__ 'repair completed'}",
       type: 'repair'
       title: __ 'Docking'
       icon: @repairIcon
   render: ->
+    debugger;
     <div>
     {
-      for dock, i in @state.docks
+      for i in [1..4]
+        finishAt = null
+        name = if i > @props.repair_slot
+          'Locked'
+        else if (repair = @props.repair?[i])?
+          serial_id = repair.sword_serial_id
+          id = @props.sword[serial_id]?.sword_id
+          finishAt = +moment(repair.finished_at + '+0900')
+          sword_names[id] || 'Unknown sword #'+id
+        else
+          'Empty'
         <div key={i} className="panel-item ndock-item">
-          <span className="ndock-name">{i18n.resources.__ dock.name}</span>
-          <CountdownLabel dockIndex={i}
-                          completeTime={dock.completeTime}
-                          notify={@notify.bind @, dock.name}/>
+          <span className="ndock-name">{name}</span>
+          <CountdownLabel
+            overlay={
+              if finishAt?
+                <Tooltip id="ndock-finish-by-#{i}">
+                  <strong>{__ "Finish by : "}</strong>{timeToString finishAt}
+                </Tooltip>
+              else
+                <div />
+            }
+            completeTime={finishAt}
+            notifyBefore={60}
+            notify={@notify.bind @, @props.party?[i]?.party_name}/>
         </div>
     }
     </div>

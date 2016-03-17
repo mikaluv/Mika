@@ -71,7 +71,6 @@ ShipPane = (deckIndex) ->
         </div>
         <div className="ship-details#{if @miniFlag then '-mini' else ''}">
           {
-            debugger;
             for j, {serial_id} of (@props.party?.slot || {}) when serial_id?
               if (sword = @props.swords?[serial_id])?
                 React.createElement @ShipItem,
@@ -88,7 +87,7 @@ ShipPane = (deckIndex) ->
     shipItem: React.PropTypes.func
   connect((state) -> 
     deckIndex: deckIndex
-    party: state.info?.party?[deckIndex]
+    party: state.party?[deckIndex]
     swords: state.info?.sword
   ) ShipPane_
 

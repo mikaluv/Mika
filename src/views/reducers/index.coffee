@@ -5,3 +5,4 @@ module.exports = combineReducers
   repair: require './repair'
   info: require './info'
   conquest: require './conquest'
+  party: require './party'

@@ -1,5 +1,8 @@
 module.exports.jsonClone = (obj) ->
-  JSON.parse(JSON.stringify(obj))
+  try
+    JSON.parse(JSON.stringify(obj))
+  catch e
+    obj
 
 module.exports.composeReducer = (reducers) -> (state={}, action) -> 
   for reducer in reducers

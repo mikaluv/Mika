@@ -20,54 +20,9 @@ ShipPane = (deckIndex) ->
         window._ships[shipData.id].api_cond = cond[j]
       @setState
         ships: ships
-    handleResponse: (e) ->
-      {method, path, body, postBody} = e.detail
-      label = Object.clone @state.label
-      updateflag = false
-      switch path
-        when '/kcsapi/api_port/port', '/kcsapi/api_req_hensei/change', '/kcsapi/api_req_nyukyo/speedchange', '/kcsapi/api_req_hensei/preset_select'
-          updateflag = true
-          label = @getLabels()
-        when '/kcsapi/api_req_hokyu/charge'
-          if @miniFlag
-            updateflag = true
-            label = @getLabels()
-        when '/kcsapi/api_req_nyukyo/start'
-          if (postBody.api_highspeed == 1)
-            updateflag = true
-        when '/kcsapi/api_get_member/ndock'
-          for shipId in _ndocks
-            i = @props.deck.api_ship.indexOf shipId
-            if i isnt -1
-              label[i] = 1
-              updateflag = true
-      if updateflag
-        @setState
-          label: label
-    setShipData: (props) ->
-      if @condDynamicUpdateFlag
-        @condDynamicUpdateFlag = not @condDynamicUpdateFlag
-      else
-        ships = []
-        for shipId, i in props.deck.api_ship
-          continue if shipId is -1
-          ships.push new @ShipData(shipId)
-        @setState
-          ships: ships
-    componentWillMount_: ->
-      @handleResponseWithThis = @handleResponse.bind(@)
     render: ->
       <div>
         <div className='fleet-name'>
-          { <div />
-            #<TopAlert
-            #  updateCond={@onCondChange.bind(@)}
-            #  messages={@props.messages}
-            #  deckIndex={@props.deckIndex}
-            #  deckName={@props.deckName}
-            #  mini={@miniFlag}
-            #/>
-          }
         </div>
         <div className="ship-details#{if @miniFlag then '-mini' else ''}">
           {
@@ -88,7 +43,7 @@ ShipPane = (deckIndex) ->
   connect((state) -> 
     deckIndex: deckIndex
     party: state.party?[deckIndex]
-    swords: state.info?.sword
+    swords: state.sword
   ) ShipPane_
 
 module.exports = ShipPane

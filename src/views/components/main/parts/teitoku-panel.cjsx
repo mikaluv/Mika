@@ -10,7 +10,9 @@ order = if layout == 'horizontal' or window.doubleTabbed then [1, 3, 5, 7, 2, 4,
 totalExpList = require path.join ROOT, 'assets/data/player_exp_list.json'
 
 TeitokuPanel = connect((state) -> 
-  _.pick state.info, 'name', 'level', 'exp', 'sword', 'equip', 'max_sword', 'max_equip'
+  Object.assign {},
+    _.pick(state.info, 'name', 'level', 'exp', 'equip', 'max_sword', 'max_equip')
+    sword: state.sword
 ) React.createClass
   render: ->
     styleCommon =

@@ -5,7 +5,7 @@ getRepair = (state={}, action) ->
   if action.type == actions.ON_GAME_RESPONSE
     {path, response, request} = action
     if response.repair?
-      return response.repair
+      return jsonClone response.repair
   state
 
 repairComplete = (state={}, action) ->

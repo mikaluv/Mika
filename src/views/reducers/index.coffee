@@ -7,3 +7,4 @@ module.exports = combineReducers
   conquest: require './conquest'
   party: require './party'
   sword: require './sword'
+  forge: require './forge'

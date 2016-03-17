@@ -27,11 +27,16 @@ module.exports = CountdownLabel = connect((state) ->
   render: ->
     timeRemaining = @getTimeRemaining @props.completeTime
     style = @getLabelStyle timeRemaining
-    <OverlayTrigger placement='left' overlay={@props.overlay}>
+    contents = 
       <Label className="mission-timer" bsStyle={style}>
       {
         if @props.completeTime?
           <span>{resolveTime timeRemaining}</span>
       }
       </Label>
-    </OverlayTrigger>
+    if @props.overlay
+      <OverlayTrigger placement='left' overlay={@props.overlay}>
+        {contents}
+      </OverlayTrigger>
+    else
+      contents

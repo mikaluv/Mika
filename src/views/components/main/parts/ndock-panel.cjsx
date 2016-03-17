@@ -48,7 +48,7 @@ NdockPanel = connect((state) ->
                 <div />
             }
             completeTime={finishAt}
-            notifyBefore={60}
+            notifyBefore={1}
             notify={@notify.bind @, @props.party?[i]?.party_name}/>
         </div>
     }

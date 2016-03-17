@@ -18,7 +18,7 @@ updateFieldId = (state={}, action) ->
   if action.type == actions.ON_GAME_RESPONSE
     {path, response, request} = action
     if path.indexOf('/conquest') == 0
-      state_copy = jsonClone state; 
+      state_copy = jsonClone state 
       for i in [2..4] when (summary = response.summary?[i])?
         state_copy[i] ?= {}
         state_copy[i].field_id = summary.field_id

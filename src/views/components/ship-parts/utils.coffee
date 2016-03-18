@@ -73,16 +73,18 @@ module.exports =
     #return status
 
   getHpStyle: (percent) ->
-    if percent <= 25
+    if percent <= 31
       'danger'
-    else if percent <= 50
+    else if percent <= 65
       'warning'
-    else if percent <= 75
+    else if percent <= 90
       'info'
     else
       'success'
 
   getFatigueNow: ({fatigue, recovered_at}, tick) ->
+    if fatigue >= 49
+      return fatigue
     recoverStart = moment(recovered_at + '+0900')
     elapsedTime = tick - recoverStart
     recoveredCycle = Math.floor(elapsedTime / moment.duration(3, 'minutes'))

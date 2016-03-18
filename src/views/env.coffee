@@ -245,23 +245,19 @@ window.loadTheme(config.get 'poi.theme', 'paperdark')
 
 # Not sure where this function should go, leave it here just for now, for easy access.
 window.getCondStyle = (cond) ->
+  # Options: 53, 50, 49, 40, 30, 20, 0
   s = 'poi-ship-cond-'
-  if cond > 52
+  if cond > 49
     s += '53'
-  else if cond > 49
-    s += '50'
   else if cond == 49
     s += '49'
-  else if cond > 39
-    s += '40'
-  else if cond > 29
-    s += '30'
   else if cond > 19
+    s += '40'
+  else if cond > 5
     s += '20'
   else
     s += '0'
   s += if isDarkTheme then ' dark' else ' light'
-
 
 # Global data resolver
 

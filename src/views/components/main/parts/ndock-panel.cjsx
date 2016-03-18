@@ -13,8 +13,8 @@ sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
 NdockPanel = connect((state) -> 
   repair: state.repair
   repair_slot: state.info.repair_slot
-  sword: state.info.sword
-  party: state.info.party
+  swords: state.sword
+  party: state.party
 ) React.createClass
   repairIcon: path.join(ROOT, 'assets', 'img', 'operation', 'repair.png')
   notify: (dockName) ->
@@ -31,7 +31,7 @@ NdockPanel = connect((state) ->
           'Locked'
         else if (repair = @props.repair?[i])?
           serial_id = repair.sword_serial_id
-          id = @props.sword[serial_id]?.sword_id
+          id = @props.swords[serial_id]?.sword_id
           finishAt = +moment(repair.finished_at + '+0900')
           sword_names[id] || 'Unknown sword #'+id
         else

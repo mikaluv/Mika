@@ -10,7 +10,7 @@ getParty = (state={}, action) ->
       return jsonClone party
   state
 
-updateSword = (state={}, action) ->
+updateParty = (state={}, action) ->
   if action.type == actions.ON_GAME_RESPONSE
     {path, response, request} = action
     if path in ['/party/setsword', '/party/removesword']
@@ -22,5 +22,5 @@ updateSword = (state={}, action) ->
 
 module.exports = composeReducer [
   getParty,
-  updateSword,
+  updateParty,
 ]

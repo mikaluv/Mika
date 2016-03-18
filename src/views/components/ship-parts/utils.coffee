@@ -1,3 +1,5 @@
+moment = require 'moment'
+
 class BaseShipData
   constructor: (shipId) ->
     {$ships, $shipTypes, _ships, _slotitems} = window
@@ -79,3 +81,14 @@ module.exports =
       'info'
     else
       'success'
+
+  getFatigueNow: ({fatigue, recovered_at}, tick) ->
+    recoverStart = moment(recovered_at + '+0900')
+    elapsedTime = tick - recoverStart
+    recoveredCycle = Math.floor(elapsedTime / moment.duration(3, 'minutes'))
+    Math.min(49, fatigue + recoveredCycle * 3)
+
+  fatigueRecoverTime: ({fatigue, recovered_at}, tick) ->
+    recoverStart = moment(recovered_at + '+0900')
+    neededTime = Math.ceil(Math.max(0, 49 - fatigue) / 3) * moment.duration(3, 'minutes')
+    Math.max(0, recoverStart + neededTime - tick)

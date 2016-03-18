@@ -11,22 +11,15 @@ ShipPane = (deckIndex) ->
       @miniFlag = props.miniFlag
       @ShipData = props.shipData
       @ShipItem = props.shipItem
-      @condDynamicUpdateFlag = false
-    onCondChange: (cond) ->
-      condDynamicUpdateFlag = true
-      ships = Object.clone @state.ships
-      for shipData, j in ships
-        ships[j].cond = cond[j]
-        window._ships[shipData.id].api_cond = cond[j]
-      @setState
-        ships: ships
     render: ->
+      totalLevel = 
       <div>
         <div className='fleet-name'>
+          <TopAlert party={@props.party} />
         </div>
         <div className="ship-details#{if @miniFlag then '-mini' else ''}">
           {
-            for j, {serial_id} of (@props.party?.slot || {}) when serial_id?
+            for j, {serial_id} of @props.party.slot when serial_id?
               if (sword = @props.swords?[serial_id])?
                 React.createElement @ShipItem,
                   key: "#{j}.#{serial_id}"
@@ -42,7 +35,7 @@ ShipPane = (deckIndex) ->
     shipItem: React.PropTypes.func
   connect((state) -> 
     deckIndex: deckIndex
-    party: state.party?[deckIndex]
+    party: defaultTo(state.party?[deckIndex], {})
     swords: state.sword
   ) ShipPane_
 

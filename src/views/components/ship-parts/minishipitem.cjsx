@@ -11,7 +11,7 @@ __n = i18n.main.__n.bind(i18n.main)
 StatusLabel = require './statuslabel'
 {SlotitemIcon} = require '../etc/icon'
 
-{getHpStyle, getShipStatus, getStatusStyle, getShipStatus, BaseShipData} = require './utils'
+{getHpStyle, getShipStatus, getStatusStyle, getShipStatus, BaseShipData, getFatigueNow} = require './utils'
 equip_names = require path.join(ROOT, 'assets/data/equip_names.json')
 sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
 sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
@@ -59,12 +59,14 @@ Slotitems = connect((state) ->
 
 MiniShipRow = connect((state) -> 
   equips: state.info?.equip
+  tick: state.tick
 ) React.createClass
   render: ->
     status = getShipStatus true, @props.shipData
     statusStyle = getStatusStyle status
-    {level, exp, sword_id, hp, hp_max, fatigue} = @props.shipData
+    {level, exp, sword_id, hp, hp_max} = @props.shipData
     nextExp = sword_exp_list[level] - exp
+    fatigue = getFatigueNow @props.shipData, @props.tick
 
     equipData = [
       @props.shipData.equip_serial_id1

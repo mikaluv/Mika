@@ -52,7 +52,7 @@ MissionPanel = connect((state) ->
                 <div />
             }
             completeTime={finishAt}
-            notifyBefore={window.notify.expedition}
+            notifyBefore={1}
             notify={@notify.bind @, (party?.party_name || 'Party')}/>
         </div>
     }

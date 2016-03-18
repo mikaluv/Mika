@@ -15,7 +15,10 @@ ShipPane = (deckIndex) ->
       totalLevel = 
       <div>
         <div className='fleet-name'>
-          <TopAlert party={@props.party} />
+          <TopAlert
+            party={@props.party}
+            mini={@miniFlag}
+            />
         </div>
         <div className="ship-details#{if @miniFlag then '-mini' else ''}">
           {

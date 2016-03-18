@@ -6,7 +6,7 @@ getParty = (state={}, action) ->
     {path, response, request} = action
     {party} = response
     # /home returns response.party === [], while normally it's an object
-    if party? && !Array.isArray(party)
+    if party? && path != '/home'
       return jsonClone party
   state
 

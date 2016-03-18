@@ -1,12 +1,16 @@
 {relative, join} = require 'path-extra'
+path =  require 'path-extra'
 {$, $$, _, React, ReactBootstrap, resolveTime, notify} = window
 {Table, ProgressBar, OverlayTrigger, Tooltip, Grid, Col, Alert, Row, Overlay, Label} = ReactBootstrap
+{connect} = require 'react-redux'
 __ = i18n.main.__.bind(i18n.main)
 __n = i18n.main.__n.bind(i18n.main)
 Slotitems = require './slotitems'
 StatusLabel = require './statuslabel'
 
-{getHpStyle, getStatusStyle, getShipStatus, BaseShipData} = require './utils'
+{getHpStyle, getStatusStyle, getShipStatus, getFatigueNow} = require './utils'
+sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
+sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
 
 getMaterialStyle = (percent) ->
   if percent <= 50
@@ -18,64 +22,66 @@ getMaterialStyle = (percent) ->
   else
     'success'
 
-class ShipData extends BaseShipData
-  constructor: (shipId) ->
-    super shipId
-    ship = window._ships[shipId]
-    shipInfo = window.$ships[ship.api_ship_id]
-    @ndockTime = ship.api_ndock_time
-    @nowFeul = ship.api_fuel
-    @maxFeul = ship.api_fuel_max
-    @fuelStatus = ship.api_fuel / shipInfo.api_fuel_max * 100
-    @nowBull = ship.api_bull
-    @maxBull = shipInfo.api_bull_max
-    @bullStatus = ship.api_bull / shipInfo.api_bull_max * 100
-
-ShipRow = React.createClass
-  shouldComponentUpdate: (nextProps, nextState) ->
-    not _.isEqual nextProps, @props
+ShipRow = connect((state) -> 
+  equips: state.info?.equip
+  repairs: state.repair
+  tick: state.tick
+) React.createClass
   render: ->
+    status = getShipStatus true, @props.shipData
+    statusStyle = getStatusStyle status
+    {level, exp, sword_id, hp, hp_max} = @props.shipData
+    nextExp = sword_exp_list[level] - exp
+    fatigue = getFatigueNow @props.shipData, @props.tick
+    name = sword_names[sword_id]
+
+    equipData = [
+      @props.shipData.equip_serial_id1
+      @props.shipData.equip_serial_id2
+      @props.shipData.equip_serial_id3
+      @props.shipData.horse_serial_id
+    ].filter(Boolean)
     <div className="ship-item">
       <div className="ship-tile">
         <div className="ship-basic-item">
-          <div className="ship-info" style={getStatusStyle @props.label}>
+          <div className="ship-info" style={statusStyle}>
             <div className="ship-basic">
               <span className="ship-lv">
-                Lv. {@props.shipData.lv}
+                Lv. {level}
               </span>
               <span className='ship-type'>
-                {i18n.resources.__ @props.shipData.type}
+                {'T'}
               </span>
             </div>
             <span className="ship-name">
-              {i18n.resources.__ @props.shipData.name}
+              {name}
             </span>
             <span className="ship-exp">
-              Next. {@props.shipData.nextEXP}
+              Next. {nextExp}
             </span>
           </div>
           {
             shipStat =
               <div className="ship-stat">
                 <div className="div-row">
-                  <span className="ship-hp" style={getStatusStyle @props.label}>
-                    {@props.shipData.nowHp} / {@props.shipData.maxHp}
+                  <span className="ship-hp" style={statusStyle}>
+                    {hp} / {hp_max}
                   </span>
                   <div className="status-label">
-                    <StatusLabel label={@props.label}/>
+                    <StatusLabel label={status}/>
                   </div>
-                  <div style={getStatusStyle @props.label}>
-                    <span className={"ship-cond " + window.getCondStyle(@props.shipData.cond)}>
-                      ★{@props.shipData.cond}
+                  <div style={statusStyle}>
+                    <span className={"ship-cond " + window.getCondStyle(fatigue)}>
+                      ★{fatigue}
                     </span>
                   </div>
                 </div>
-                <span className="hp-progress top-space" style={getStatusStyle @props.label}>
-                  <ProgressBar bsStyle={getHpStyle @props.shipData.nowHp / @props.shipData.maxHp * 100}
-                               now={@props.shipData.nowHp / @props.shipData.maxHp * 100} />
+                <span className="hp-progress top-space" style={statusStyle}>
+                  <ProgressBar bsStyle={getHpStyle hp / hp_max * 100}
+                               now={hp / hp_max * 100} />
                 </span>
               </div>
-            if @props.shipData.ndockTime
+            if false            # TODO: repair time formula
               <OverlayTrigger show = {@props.shipData.ndockTime} placement='right' overlay={
                               <Tooltip id="panebody-repair-time-#{@props.key}-#{@props.shipIndex}">
                                 {__ 'Repair Time'}: {resolveTime @props.shipData.ndockTime / 1000}
@@ -87,26 +93,12 @@ ShipRow = React.createClass
           }
         </div>
       </div>
-      <span className="ship-fb" style={getStatusStyle @props.label}>
-        <span style={flex: 1}>
-          <OverlayTrigger placement='right' overlay={<Tooltip id="panebody-fuel-#{@props.key}-#{@props.shipIndex}">{@props.shipData.nowFeul} / {@props.shipData.maxFeul}</Tooltip>}>
-            <ProgressBar bsStyle={getMaterialStyle @props.shipData.fuelStatus}
-                         now={@props.shipData.fuelStatus} />
-          </OverlayTrigger>
-        </span>
-        <span style={flex: 1}>
-          <OverlayTrigger placement='right' overlay={<Tooltip id="panebody-bull-#{@props.key}-#{@props.shipIndex}">{@props.shipData.nowBull} / {@props.shipData.maxBull}</Tooltip>}>
-            <ProgressBar bsStyle={getMaterialStyle @props.shipData.bullStatus}
-                         now={@props.shipData.bullStatus} />
-          </OverlayTrigger>
-        </span>
-      </span>
-      <div className="ship-slot" style={getStatusStyle @props.label}>
-        <Slotitems key={@props.shipIndex} fleet={@props.deckIndex} slots={@props.shipData.slotItems}/>
+      <div className="ship-slot" style={statusStyle}>
       </div>
     </div>
 
+#<Slotitems key={@props.shipIndex} fleet={@props.deckIndex} slots={@props.shipData.slotItems}/>
+
 module.exports =
   shipItem: ShipRow
-  shipData: ShipData
   miniFlag: false

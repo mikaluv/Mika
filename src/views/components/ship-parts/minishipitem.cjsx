@@ -11,7 +11,7 @@ __n = i18n.main.__n.bind(i18n.main)
 StatusLabel = require './statuslabel'
 {SlotitemIcon} = require '../etc/icon'
 
-{getHpStyle, getShipStatus, getStatusStyle, getShipStatus, BaseShipData, getFatigueNow} = require './utils'
+{getHpStyle, getShipStatus, getStatusStyle, getFatigueNow} = require './utils'
 equip_names = require path.join(ROOT, 'assets/data/equip_names.json')
 sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
 sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
@@ -67,6 +67,7 @@ MiniShipRow = connect((state) ->
     {level, exp, sword_id, hp, hp_max} = @props.shipData
     nextExp = sword_exp_list[level] - exp
     fatigue = getFatigueNow @props.shipData, @props.tick
+    name = sword_names[sword_id]
 
     equipData = [
       @props.shipData.equip_serial_id1
@@ -97,7 +98,7 @@ MiniShipRow = connect((state) ->
           }>
             <div className="ship-info">
               <span className="ship-name" style={statusStyle}>
-                {sword_names[sword_id]}
+                {name}
               </span>
               <span className="ship-lv-text top-space" style={statusStyle}>
                 Lv. {level}
@@ -128,5 +129,4 @@ MiniShipRow = connect((state) ->
 
 module.exports =
   shipItem: MiniShipRow
-  shipData: BaseShipData
   miniFlag: true

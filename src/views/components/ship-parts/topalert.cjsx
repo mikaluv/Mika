@@ -30,18 +30,33 @@ TopAlert = connect((state) ->
 ) React.createClass
   render: ->
     messages = getDeckMessage @props.party.slot, @props.swords, @props.tick
+    totalLv = messages.totalLv
+    avgLv = messages.avgLv.toFixed(1)
+    fatigue = (resolveTime messages.recoverTime).slice(3) # [HH:]MM:SS
     <div style={width: '100%'}>
-      <Alert style={getFontStyle window.theme}>
-        <div style={display: "flex"}>
-          <span style={flex: 1}>{__ 'Total Lv'}. {messages.totalLv}</span>
-          <span style={flex: 1}>
-            <span>{__ 'Avg Lv'}: {messages.avgLv.toFixed(1)}</span>
-          </span>
-          <span style={flex: 1.5}>Fatigue: <span id={"deck-condition-countdown-#{@props.deckIndex}-#{@componentId}"}>
-          {
-            (resolveTime messages.recoverTime).slice(3) # [HH:]MM:SS
-          }</span></span>
+    {
+      if @props.mini
+        <div style={display: "flex", justifyContent: "space-around", width: '100%'}>
+          <span style={flex: "none"}>Lv. {totalLv} </span>
+          <span style={flex: "none", marginLeft: 5}>{__ 'Avg Lv'}: {avgLv}</span>
+          <span style={flex: "none", marginLeft: 5}>{__ 'Fatigue'}: {fatigue}</span>
         </div>
-      </Alert>
+      else
+        <Alert style={getFontStyle window.theme}>
+          <div style={display: "flex"}>
+            <span style={flex: 1}>{__ 'Total Lv'}. {totalLv}</span>
+            <span style={flex: 1}>
+              <span>{__ 'Avg Lv'}: {avgLv}</span>
+            </span>
+            <span style={flex: 1.5}>
+              Fatigue:
+              <span id={"deck-condition-countdown-#{@props.deckIndex}-#{@componentId}"}>
+                {fatigue}
+              </span>
+            </span>
+          </div>
+        </Alert>
+    }
     </div>
 module.exports = TopAlert
+

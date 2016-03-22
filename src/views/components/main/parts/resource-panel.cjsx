@@ -8,29 +8,29 @@ __ = i18n.main.__.bind(i18n.main)
 __n = i18n.main.__n.bind(i18n.main)
 {MaterialIcon} = require '../../etc/icon'
 
-order = [1..4]
+order = [1..6]
+
+HELP_TOKEN_ID = 8
 
 ResourcePanel = connect((state) -> 
-  _.pick state.info, 'resource'
+  resource: state.info.resource
+  helpToken: state.item?[HELP_TOKEN_ID]
+  hasItems: !Array.isArray(state.item)
 ) React.createClass
-  getInitialState: ->
-    material: ['??', '??', '??', '??', '??', '??', '??', '??', '??']
-    limit: 30750   # material limit of level 120
-    show: true
-  shouldComponentUpdate: (nextProps, nextState) ->
-    nextState.show
   handleVisibleResponse: (e) ->
     {visible} = e.detail
     @setState
       show: visible
   render: ->
-    resource = @props.resource
+    {resource, helpToken, hasItems} = @props
     data = [
       '',
       resource?.charcoal,
       resource?.steel,
       resource?.coolant,
       resource?.file,
+      if hasItems then (helpToken?.num || 0) else undefined,
+      resource?.bill,
     ]
     testLimit = (n) ->
       limit = resource?.max_resource

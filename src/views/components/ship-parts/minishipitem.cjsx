@@ -20,7 +20,7 @@ getFontStyle = (theme)  ->
   if window.isDarkTheme then color: '#FFF' else color: '#000'
 
 Slotitems = connect((state) -> 
-  equips: state.info?.equip
+  equips: state.equip
 ) React.createClass
   render: ->
     <div className="slotitems-mini" style={display: "flex", flexFlow: "column"}>

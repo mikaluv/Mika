@@ -12,6 +12,7 @@ pathsOnlyTarget = [
   '/equip/setitem',
   '/equip/removeequip',
   '/equip/setequip',
+  '/equip/removeall',
   '/composition/compose',
 ]
 

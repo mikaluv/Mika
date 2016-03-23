@@ -9,9 +9,10 @@ classnames = require 'classnames'
 __ = i18n.main.__.bind(i18n.main)
 __n = i18n.main.__n.bind(i18n.main)
 StatusLabel = require './statuslabel'
-{SlotitemIcon} = require '../etc/icon'
+{EquipIcon, HorseIcon, ProtectionIcon} = require '../etc/icon'
 
 {getHpStyle, getShipStatus, getStatusStyle, getFatigueNow} = require './utils'
+consumable_names = require path.join(ROOT, 'assets/data/consumable_names.json')
 equip_names = require path.join(ROOT, 'assets/data/equip_names.json')
 sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
 sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
@@ -19,72 +20,96 @@ sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
 getFontStyle = (theme)  ->
   if window.isDarkTheme then color: '#FFF' else color: '#000'
 
-Slotitems = connect((state) -> 
-  equips: state.equip
-) React.createClass
+MiniEquip = React.createClass
+  shouldComponentUpdate: (nextProps, nextState) ->
+    !_.isEqual nextProps, @props
+
+  propTypes:
+    name: React.PropTypes.string.isRequired
+    equipId: React.PropTypes.number
+    soldier: React.PropTypes.number
+    iconClass: React.PropTypes.func
+
   render: ->
-    <div className="slotitems-mini" style={display: "flex", flexFlow: "column"}>
-    {
-      for equip_serial_id, i in @props.data
-        continue if !equip_serial_id? || equip_serial_id == -1
-        continue if !(equip = @props.equips[equip_serial_id])?
-        {equip_id, soldier} = equip
-        onSlotClassName = classnames 'slotitem-onslot-mini',
-          hide: equip_id > 10000        # Horse.id > 10000
-        <div key={i} className="slotitem-container-mini">
-          {undefined
-            #<SlotitemIcon key={itemId} className='slotitem-img' slotitemId={item.slotitemId} />
-            #<span className="slotitem-name-mini">
-            #  {i18n.resources.__ item.name}
-            #    {if item.level > 0 then <strong style={color: '#45A9A5'}> ★{item.level}</strong> else ''}
-            #    &nbsp;&nbsp;{
-            #      if item.alv? and 1 <= item.alv <= 7
-            #        <img className='alv-img' src={join('assets', 'img', 'airplane', "alv#{item.alv}.png")} />
-            #      else ''
-            #    }
-            #</span>
-            #<Label className="slotitem-onslot-mini
-            #                #{if (item.slotitemId >= 6 && item.slotitemId <= 10) || (item.slotitemId >= 21 && item.slotitemId <= 22) || item.slotitemId == 33 then 'show' else 'hide'}"
-            #                bsStyle="#{if item.onslot < item.maxeq then 'warning' else 'default'}">
-          }
-          <span className="slotitem-name-mini">
-            {equip_names[equip_id]}
-          </span>
-          <Label className={onSlotClassName}>
-            {soldier}
+    {name, equipId, soldier, iconClass: IconClass} = @props
+    <div className="slotitem-container-mini">
+      <IconClass className='slotitem-img' equipId={equipId} />
+      <span className="slotitem-name-mini">
+        { name }
+      </span>
+      {
+        if soldier?
+          <Label className='slotitem-onslot-mini'>
+            { soldier }
           </Label>
-        </div>
-    }
+      }
     </div>
 
-MiniShipRow = connect((state) -> 
-  equips: state.info?.equip
-  tick: state.tick
+MiniShipRow = connect(
+  (state) -> 
+    equips: state.equip
+    swords: state.sword
+    items: state.item
+    tick: state.tick
+  , null,
+  ({equips, tick, swords, items}, dispatchProps, {swordSerialId}) ->
+    sword = swords?[swordSerialId]
+    newEquips = [
+      sword?.equip_serial_id1
+      sword?.equip_serial_id2
+      sword?.equip_serial_id3
+      sword?.horse_serial_id
+    ].map((equipSerialId) -> if equipSerialId? then equips?[equipSerialId])
+    item = if sword?.item_id then items?[sword?.item_id]
+    {tick, sword, equips: newEquips, item}
 ) React.createClass
   render: ->
-    status = getShipStatus true, @props.shipData
+    {tick, sword, equips, item} = @props
+    return <div /> if !sword?
+
+    status = getShipStatus true, sword
     statusStyle = getStatusStyle status
-    {level, exp, sword_id, hp, hp_max} = @props.shipData
+    {level, exp, sword_id, hp, hp_max} = sword
     nextExp = sword_exp_list[level] - exp
-    fatigue = getFatigueNow @props.shipData, @props.tick
+    fatigue = getFatigueNow sword, tick
     name = sword_names[sword_id]
 
-    equipData = [
-      @props.shipData.equip_serial_id1
-      @props.shipData.equip_serial_id2
-      @props.shipData.equip_serial_id3
-      @props.shipData.horse_serial_id
-    ].filter(Boolean)
     overlayPlacement = if (!window.doubleTabbed) && (window.layout == 'vertical')
         'left'
       else
         'right'
-    overlayClassName = classnames 'ship-pop',
-      'hidden': !equipData.length
+    hasEquip = false
     overlay = 
-      <Tooltip id="ship-pop-#{@props.key}-#{@props.shipIndex}" className={overlayClassName}>
+      <Tooltip id="ship-pop-#{@props.key}-#{@props.shipIndex}" className='ship-pop'>
         <div className="item-name">
-          <Slotitems data={equipData} />
+          {
+            for equip, i in equips
+              continue if !equip?
+              hasEquip = true
+              {serial_id, equip_id, soldier} = equip
+              isHorse = i == 3
+              soldier = if isHorse then undefined else parseInt(soldier)
+              <MiniEquip
+                key={serial_id}
+                name={equip_names[equip_id]}
+                equipId={parseInt(equip_id)}
+                soldier={soldier}
+                iconClass={if isHorse then HorseIcon else EquipIcon} 
+                />
+          }
+          {
+            if item?
+              hasEquip = true
+              <MiniEquip
+                key=0
+                name={consumable_names[item.consumable_id]}
+                iconClass={ProtectionIcon} 
+                />
+          }
+          {
+            if !hasEquip
+              <em>No equipment</em>
+          }
         </div>
       </Tooltip>
 

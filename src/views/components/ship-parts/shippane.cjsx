@@ -9,7 +9,6 @@ ShipPane = (deckIndex) ->
     constructor: (props) ->
       super props
       @miniFlag = props.miniFlag
-      @ShipData = props.shipData
       @ShipItem = props.shipItem
     render: ->
       totalLevel = 
@@ -23,12 +22,11 @@ ShipPane = (deckIndex) ->
         <div className="ship-details#{if @miniFlag then '-mini' else ''}">
           {
             for j, {serial_id} of @props.party.slot when serial_id?
-              if (sword = @props.swords?[serial_id])?
-                React.createElement @ShipItem,
-                  key: "#{j}.#{serial_id}"
-                  deckIndex: @props.deckIndex
-                  shipData: sword
-                  shipIndex: j-1
+              React.createElement @ShipItem,
+                key: "#{j}.#{serial_id}"
+                deckIndex: @props.deckIndex
+                swordSerialId: serial_id
+                shipIndex: j-1
           }
         </div>
       </div>

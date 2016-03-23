@@ -195,12 +195,13 @@ module.exports =
           {
             for i in [1..4]
               PaneBody_ = PaneBody(i)
-              <div className="ship-deck" key={i}>
-                <PaneBody_
-                  key={i}
-                  activeDeck={@state.activeDeck}
-                />
-              </div>
+              #<div className="ship-deck" key={i}>
+              #  <PaneBody_
+              #    key={i}
+              #    activeDeck={@state.activeDeck}
+              #  />
+              #</div>
+              undefined
           }
           </div>
         </div>

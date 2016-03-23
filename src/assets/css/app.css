@@ -280,3 +280,24 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .transparent {
   opacity: 0;
 }
+
+.equip-icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.equip-icon-main {
+  width: auto;
+  height: 90%;
+  z-index: 1;
+}
+.equip-icon-rank {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}

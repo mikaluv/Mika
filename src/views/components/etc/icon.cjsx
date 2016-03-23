@@ -11,7 +11,7 @@ EquipIcon = React.createClass
     equipMainId = Math.ceil(equipId/3) * 3
     # Rank: 1 - Low   2 - Mid   3 - High
     equipRankId = 3 - (equipMainId - equipId)
-    className = classnames 'equip-icon',
+    className = classnames 'equip-icon png',
       @props.className
     <div className={className} >
       <img src="file://#{ROOT}/assets/img/slotitem/#{equipMainId}.png" className='equip-icon-main' />
@@ -22,7 +22,7 @@ HorseIcon = React.createClass
   shouldComponentUpdate: ->
     false
   render: ->
-    className = classnames 'equip-icon',
+    className = classnames 'equip-icon png',
       @props.className
     <div className={className} >
       <img src="file://#{ROOT}/assets/img/slotitem/horse.png" className='equip-icon-rank' />
@@ -32,7 +32,7 @@ ProtectionIcon = React.createClass
   shouldComponentUpdate: ->
     false
   render: ->
-    className = classnames 'equip-icon',
+    className = classnames 'equip-icon png',
       @props.className
     <div className={className} >
       <img src="file://#{ROOT}/assets/img/slotitem/protect.png" className='equip-icon-rank' />

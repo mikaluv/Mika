@@ -168,10 +168,11 @@
   display: inline !important;
 }
 .ship-pop .slotitem-container-mini .slotitem-img.png {
-  width: 32px;
-  height: 32px;
-  margin-top: -8px;
-  margin-bottom: -8px;
+  width: 20px;
+  height: 20px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: 2px;
 }
 .ship-pop .slotitem-container-mini .slotitem-img.svg {
   width: 20px;

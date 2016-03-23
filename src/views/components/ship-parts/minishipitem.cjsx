@@ -1,5 +1,4 @@
 {relative, join} = require 'path-extra'
-path =  require 'path-extra'
 {_, $, $$, React, ReactBootstrap, ROOT, FontAwesome, toggleModal} = window
 {$ships, $shipTypes, _ships} = window
 {Button, ButtonGroup} = ReactBootstrap
@@ -12,10 +11,10 @@ StatusLabel = require './statuslabel'
 {EquipIcon, HorseIcon, ProtectionIcon} = require '../etc/icon'
 
 {getHpStyle, getShipStatus, getStatusStyle, getFatigueNow} = require './utils'
-consumable_names = require path.join(ROOT, 'assets/data/consumable_names.json')
-equip_names = require path.join(ROOT, 'assets/data/equip_names.json')
-sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
-sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
+consumable_names = require join(ROOT, 'assets/data/consumable_names.json')
+equip_names = require join(ROOT, 'assets/data/equip_names.json')
+sword_names = require join(ROOT, 'assets/data/sword_names.json')
+sword_exp_list = require join(ROOT, 'assets/data/sword_exp_list.json')
 
 getFontStyle = (theme)  ->
   if window.isDarkTheme then color: '#FFF' else color: '#000'

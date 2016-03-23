@@ -1,5 +1,4 @@
 {relative, join} = require 'path-extra'
-path =  require 'path-extra'
 {$, $$, _, React, ReactBootstrap, resolveTime, notify} = window
 {Table, ProgressBar, OverlayTrigger, Tooltip, Grid, Col, Alert, Row, Overlay, Label} = ReactBootstrap
 {connect} = require 'react-redux'
@@ -7,10 +6,19 @@ __ = i18n.main.__.bind(i18n.main)
 __n = i18n.main.__n.bind(i18n.main)
 Slotitems = require './slotitems'
 StatusLabel = require './statuslabel'
+classnames = require 'classnames'
+getBackgroundStyle = ->
+  if window.isDarkTheme
+    backgroundColor: 'rgba(33, 33, 33, 0.7)'
+  else
+    backgroundColor: 'rgba(256, 256, 256, 0.7)'
 
+{EquipIcon, HorseIcon, ProtectionIcon} = require '../etc/icon'
 {getHpStyle, getStatusStyle, getShipStatus, getFatigueNow} = require './utils'
-sword_names = require path.join(ROOT, 'assets/data/sword_names.json')
-sword_exp_list = require path.join(ROOT, 'assets/data/sword_exp_list.json')
+sword_names = require join(ROOT, 'assets/data/sword_names.json')
+sword_exp_list = require join(ROOT, 'assets/data/sword_exp_list.json')
+equip_names = require join(ROOT, 'assets/data/equip_names.json')
+consumable_names = require join(ROOT, 'assets/data/consumable_names.json')
 
 getMaterialStyle = (percent) ->
   if percent <= 50
@@ -22,25 +30,81 @@ getMaterialStyle = (percent) ->
   else
     'success'
 
-ShipRow = connect((state) -> 
-  equips: state.info?.equip
-  repairs: state.repair
-  tick: state.tick
+Equip = React.createClass
+  shouldComponentUpdate: (nextProps, nextState) ->
+    !_.isEqual nextProps, @props
+
+  propTypes:
+    name: React.PropTypes.string.isRequired
+    equipId: React.PropTypes.number
+    soldier: React.PropTypes.number
+    iconClass: React.PropTypes.func
+
+  render: ->
+    {name, equipId, soldier, iconClass: IconClass} = @props
+    itemOverlay = 
+      <Tooltip>
+        <div>{ name }</div>
+        {undefined
+          #if _slotitems[itemId]?
+          #  datas = getItemData _slotitems[itemId]
+          #  for data, index in datas
+          #    <div key="Slotitem-#{itemId}-#{index}">{data}</div>
+        }
+      </Tooltip>
+
+    itemSpan =
+      <span>
+        <IconClass className='slotitem-img' equipId={equipId} />
+        {
+          if soldier?
+            <span className="slotitem-onslot" style={getBackgroundStyle()}>
+              {soldier}
+            </span>
+        }
+      </span>
+
+    <div className="slotitem-container">
+    {
+      if itemOverlay        # TODO: always exist? empty slot icon?
+        <OverlayTrigger placement='left' overlay={itemOverlay}>
+          {itemSpan}
+        </OverlayTrigger>
+      else
+        itemSpan
+    }
+    </div>
+
+ShipRow = connect(
+  (state) -> 
+    equips: state.equip
+    swords: state.sword
+    items: state.item
+    repairs: state.repair
+    tick: state.tick
+  , null,
+  ({equips, tick, swords, items, repairs}, dispatchProps, {swordSerialId}) ->
+    sword = swords?[swordSerialId]
+    newEquips = [
+      sword?.equip_serial_id1
+      sword?.equip_serial_id2
+      sword?.equip_serial_id3
+      sword?.horse_serial_id
+    ].map((equipSerialId) -> if equipSerialId? then equips?[equipSerialId])
+    item = if sword?.item_id then items?[sword?.item_id]
+    {tick, sword, equips: newEquips, item, repairs}
 ) React.createClass
   render: ->
-    status = getShipStatus true, @props.shipData
+    {tick, sword, equips, item, repairs} = @props
+    return <div /> if !sword?
+
+    status = getShipStatus true, sword
     statusStyle = getStatusStyle status
-    {level, exp, sword_id, hp, hp_max} = @props.shipData
+    {level, exp, sword_id, hp, hp_max} = sword
     nextExp = sword_exp_list[level] - exp
-    fatigue = getFatigueNow @props.shipData, @props.tick
+    fatigue = getFatigueNow sword, tick
     name = sword_names[sword_id]
 
-    equipData = [
-      @props.shipData.equip_serial_id1
-      @props.shipData.equip_serial_id2
-      @props.shipData.equip_serial_id3
-      @props.shipData.horse_serial_id
-    ].filter(Boolean)
     <div className="ship-item">
       <div className="ship-tile">
         <div className="ship-basic-item">
@@ -94,10 +158,35 @@ ShipRow = connect((state) ->
         </div>
       </div>
       <div className="ship-slot" style={statusStyle}>
+        <div className="slotitems">
+          {
+            for equip, i in equips
+              continue if !equip?
+              hasEquip = true
+              {serial_id, equip_id, soldier} = equip
+              isHorse = i == 3
+              soldier = if isHorse then undefined else parseInt(soldier)
+              <Equip
+                key={serial_id}
+                name={equip_names[equip_id]}
+                equipId={parseInt(equip_id)}
+                soldier={soldier}
+                iconClass={if isHorse then HorseIcon else EquipIcon} 
+                />
+          }
+          {
+            if item?
+              hasEquip = true
+              <Equip
+                key=0
+                name={consumable_names[item.consumable_id]}
+                iconClass={ProtectionIcon} 
+                />
+          }
+        </div>
       </div>
     </div>
 
-#<Slotitems key={@props.shipIndex} fleet={@props.deckIndex} slots={@props.shipData.slotItems}/>
 
 module.exports =
   shipItem: ShipRow

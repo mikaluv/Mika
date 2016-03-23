@@ -224,14 +224,14 @@
 }
 
 #ShipView .ship-details .ship-item .ship-slot{
-  width: 130px;
+  width: 155px;
   flex: none;
   margin: 5px 5px 5px 5px;
 }
 #ShipView .slotitem-container {
   position: relative;
   vertical-align: bottom;
-  display: inline;
+  display: inline-block;
 }
 #ShipView .slotitem-container .slotitem-onslot {
   position: absolute;
@@ -244,21 +244,23 @@
   height: 18px;
   padding-left: 2px;
   padding-right: 2px;
+  z-index: 2;
 }
 #ShipView .slotitem-container span.show {
-  display: inline !important;
+  display: inline-block;
 }
-#ShipView .slotitem-container img.png {
-  width: 32px;
-  height: 32px;
-  margin-top: -5px;
-  margin-bottom: -3px;
-  margin-left: -5px;
+#ShipView .slotitem-container .png {
+  width: 30px;
+  height: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 1px;
 }
-#ShipView .slotitem-container img.svg {
-  width: 26px;
+#ShipView .slotitem-container .svg {
+  width: 23px;
   height: 23px;
-  margin-right: 2px;
+  margin-right: 5px;
 }
 #ShipView .alert {
   background-color: transparent;

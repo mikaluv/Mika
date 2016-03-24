@@ -45,13 +45,7 @@ MiniEquip = React.createClass
     </div>
 
 MiniShipRow = connect(
-  (state) -> 
-    equips: state.equip
-    swords: state.sword
-    items: state.item
-    tick: state.tick
-  , null,
-  ({equips, tick, swords, items}, dispatchProps, {swordSerialId}) ->
+  ({equip: equips, sword: swords, item: items, tick}, {swordSerialId, deckIndex}) -> 
     sword = swords?[swordSerialId]
     newEquips = [
       sword?.equip_serial_id1

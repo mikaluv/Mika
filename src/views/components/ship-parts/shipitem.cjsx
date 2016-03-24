@@ -4,7 +4,6 @@
 {connect} = require 'react-redux'
 __ = i18n.main.__.bind(i18n.main)
 __n = i18n.main.__n.bind(i18n.main)
-Slotitems = require './slotitems'
 StatusLabel = require './statuslabel'
 classnames = require 'classnames'
 getBackgroundStyle = ->
@@ -76,14 +75,7 @@ Equip = React.createClass
     </div>
 
 ShipRow = connect(
-  (state) -> 
-    equips: state.equip
-    swords: state.sword
-    items: state.item
-    repairs: state.repair
-    tick: state.tick
-  , null,
-  ({equips, tick, swords, items, repairs}, dispatchProps, {swordSerialId}) ->
+  ({equip: equips, sword: swords, item: items, repairs, tick}, {swordSerialId, deckIndex}) -> 
     sword = swords?[swordSerialId]
     newEquips = [
       sword?.equip_serial_id1

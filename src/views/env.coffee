@@ -226,7 +226,6 @@ window.loadTheme = (th) ->
   if theme == '__default__'
     $('#bootstrap-css')?.setAttribute 'href', "file://#{ROOT}/components/bootstrap/dist/css/bootstrap.css"
   else
-    console.log "file://#{ROOT}/../external/themes/#{theme}/css/#{theme}.css"
     $('#bootstrap-css')?.setAttribute 'href', "file://#{ROOT}/../external/themes/#{theme}/css/#{theme}.css"
   window.reloadCustomCss()
 window.applyTheme = (th) ->

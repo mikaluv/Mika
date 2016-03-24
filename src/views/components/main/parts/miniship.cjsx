@@ -127,10 +127,10 @@ module.exports =
                  style={left: "-#{@state.activeDeck}00%"}>
             {
               for i in [1..4]
-                PaneBodyMini_ = PaneBodyMini i
                 <div className="ship-deck" className="ship-tabpane" key={i}>
-                  <PaneBodyMini_
+                  <PaneBodyMini
                     key={i}
+                    deckIndex={i}
                     activeDeck={@state.activeDeck}
                   />
                 </div>

@@ -22,7 +22,7 @@ KdockPanel = connect((state) ->
   constructionIcon: join(ROOT, 'assets', 'img', 'operation', 'build.png')
   notify: ->
     # Notify all completed ships
-    completedShips = @props.forge.values().map(
+    completedShips = _.values(@props.forge).map(
       (forge) -> sword_names[forge.sword_id?] || "Forge slot ##{forge.slot_no}")
     .join(', ')
     notify "#{completedShips} #{__ 'built'}",

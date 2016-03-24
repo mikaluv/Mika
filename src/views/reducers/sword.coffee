@@ -63,9 +63,22 @@ forgeComplete = (state={}, action) ->
       return state_copy
   state
 
+compositionCompose = (state={}, action) ->
+  if action.type == actions.ON_GAME_RESPONSE
+    {path, response, request} = action
+    if path == '/composition/compose'
+      state_copy = jsonClone state
+      for serial_id in request.material_id.split ','
+        try
+          delete state_copy[serial_id]
+        catch e
+      return state_copy
+  state
+
 module.exports = composeReducer [
   getSword,
   updateSwordParty,
   updateSwordTarget,
+  compositionCompose,
   forgeComplete,
 ]

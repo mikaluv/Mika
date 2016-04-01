@@ -11,8 +11,9 @@ totalExpList = require path.join ROOT, 'assets/data/player_exp_list.json'
 
 TeitokuPanel = connect((state) -> 
   Object.assign {},
-    _.pick(state.info, 'name', 'level', 'exp', 'equip', 'max_sword', 'max_equip')
+    _.pick(state.info, 'name', 'level', 'exp', 'max_sword', 'max_equip')
     sword: state.sword
+    equip: state.equip
 ) React.createClass
   render: ->
     styleCommon =

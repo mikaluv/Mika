@@ -59,7 +59,7 @@ produceContinue = (state={}, action) ->
       state_copy = jsonClone state
       for newEquip in equip
         state_copy[newEquip.serial_id] = newEquip
-        return state_copy
+      return state_copy
   state
 
 module.exports = composeReducer [

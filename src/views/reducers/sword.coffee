@@ -53,10 +53,12 @@ updateSwordTarget = (state={}, action) ->
       return state_copy
   state
 
+# Modification to this function should be mirrored to forge.coffee/forgeComplete
 forgeComplete = (state={}, action) ->
   if action.type == actions.ON_GAME_RESPONSE
     {path, response, request} = action
-    if path == '/forge/complete'
+    if path in ['/forge/complete', '/forge/fast'] ||
+       (path == '/forge/start' && request.use_assist.toString() == '1')
       state_copy = jsonClone state
       # Although we don't have detailed information yet..
       state_copy[response.serial_id] = _.pick response, 'serial_id', 'sword_id'

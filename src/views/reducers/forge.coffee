@@ -17,7 +17,8 @@ getForge = (state={}, action) ->
 forgeStart = (state={}, action) ->
   if action.type == actions.ON_GAME_RESPONSE
     {path, response, request} = action
-    if path == '/forge/start'
+    # If use_assist, directly count it for forgeComplete
+    if path == '/forge/start' && request.use_assist.toString() != '1'
       state_copy = jsonClone state
       state_copy[response.slot_no] = Object.assign(
         _.pick response, 'slot_no', 'finished_at'
@@ -25,10 +26,12 @@ forgeStart = (state={}, action) ->
       return state_copy
   state
 
+# Modification to this function should be mirrored to sword.coffee/forgeComplete
 forgeComplete = (state={}, action) ->
   if action.type == actions.ON_GAME_RESPONSE
     {path, response, request} = action
-    if path == '/forge/complete'
+    if path in ['/forge/complete', '/forge/fast'] ||
+       (path == '/forge/start' && request.use_assist.toString() == '1')
       state_copy = jsonClone state
       try
         delete state_copy[request.slot_no]

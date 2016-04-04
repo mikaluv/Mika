@@ -38,17 +38,14 @@ resolveBody = (encoding, body) ->
       resolve decoded
     catch e
       reject e
-
 isStaticResource = (pathname) ->
   return true if pathname.startsWith('/kcs/') && pathname.indexOf('Core.swf') == -1
   return true if pathname.startsWith('/gadget/')
   return true if pathname.startsWith('/kcscontents/')
   return false
-
 getCachePath = (pathname) ->
   dir = config.get 'poi.cachePath', global.DEFAULT_CACHE_PATH
   path.join dir, pathname
-
 findHack = (pathname) ->
   loc = getCachePath pathname
   sp = loc.split '.'
@@ -115,7 +112,6 @@ class Proxy extends EventEmitter
       # Disable HTTP Keep-Alive
       req.headers['connection'] = 'close'
       parsed = url.parse req.url
-      isGameApi = req.headers.origin == "http://static.touken-ranbu.jp"
       cacheFile = null
       if isStaticResource(parsed.pathname)
         cacheFile = findHack(parsed.pathname) || findCache(parsed.pathname)
@@ -154,13 +150,17 @@ class Proxy extends EventEmitter
                 'Last-Modified': stats.mtime.toGMTString()
               res.end data
           # Enable retry for game api
-          else if isGameApi
+          else
+            domain = req.headers.origin
+            pathname = parsed.pathname
+            requrl = req.url
             success = false
             for i in [0..retries]
               break if success
               try
                 # Emit request event to plugins
-                self.emit 'game.on.request', req.method, parsed.pathname, JSON.stringify(querystring.parse reqBody.toString())
+                reqBody = JSON.stringify(querystring.parse reqBody.toString())
+                self.emit 'network.on.request', req.method, [domain, pathname, requrl], reqBody
                 # Create remote request
                 [response, body] = yield requestAsync resolve options
                 success = true
@@ -169,37 +169,27 @@ class Proxy extends EventEmitter
                 # Emit response events to plugins
                 try
                   resolvedBody = yield resolveBody response.headers['content-encoding'], body
-                catch 
+                catch e
+                  # Unresolveable binary files are not retried
                   break
                 if !resolvedBody?
                   throw new Error('Empty Body')
                 if response.statusCode == 200
-                  resolvedBody
-                  try
-                    self.emit 'game.on.response', req.method, parsed.pathname, JSON.stringify(resolvedBody),  JSON.stringify(querystring.parse reqBody.toString())
-                  catch 
-                    break
+                  self.emit 'network.on.response', req.method, [domain, pathname, requrl], JSON.stringify(resolvedBody),  reqBody
                 else if response.statusCode == 503
                   throw new Error('Service unavailable')
                 else
-                  self.emit 'network.invalid.code', response.statusCode
+                  self.emit 'network.invalid.code', [domain, pathname, requrl], response.statusCode
               catch e
                 error "Api failed: #{req.method} #{req.url} #{e.toString()}"
-                self.emit 'network.error.retry', i + 1 if i < retries
+                self.emit 'network.error.retry', [domain, pathname, requrl], i + 1 if i < retries
+              if success
+                break
               # Delay 3s for retry
-              yield Promise.delay(3000) unless success
-          else
-            [response, body] = yield requestAsync resolve options
-            res.writeHead response.statusCode, response.headers
-            res.end body
-          if parsed.pathname in ['/kcs/mainD2.swf', '/kcsapi/api_start2', '/kcsapi/api_get_member/basic']
-            self.emit 'game.start'
-          else if req.url.startsWith 'http://www.dmm.com/netgame/social/application/-/purchase/=/app_id=854854/payment_id='
-            self.emit 'game.payitem'
+              yield Promise.delay(3000) 
         catch e
           error "#{req.method} #{req.url} #{e.toString()}"
-          if req.url.startsWith('http://www.dmm.com/netgame/') or req.url.indexOf('/kcs/') != -1 or req.url.indexOf('/kcsapi/') != -1
-            self.emit 'network.error'
+          self.emit 'network.error', [domain, pathname, requrl]
     # HTTPS Requests
     @server.on 'connect', (req, client, head) ->
       delete req.headers['proxy-connection']

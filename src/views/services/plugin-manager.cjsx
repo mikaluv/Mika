@@ -83,7 +83,7 @@ class PluginManager
   # @param {boolean=} opt_notifyFailed notify user about unread plugins
   # @return {Promise<Array<Plugin>>}
   readPlugins: async (opt_notifyFailed) ->
-    pluginPaths = yield Promise.promisify(globAsync)(path.join @pluginPath, 'node_modules', 'poi-plugin-*')
+    pluginPaths = yield Promise.promisify(globAsync)(path.join @pluginPath, 'node_modules', 'mika-plugin-*')
     @plugins_ = pluginPaths.map @readPlugin_
     for plugin_ in @plugins_
       if plugin_.enabled

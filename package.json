@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/mikaluv/mika",
   "dependencies": {
+    "aes-js": "^0.2.4",
     "babel-core": "^6.5.2",
     "babel-plugin-add-module-exports": "^0.1.2",
     "babel-plugin-transform-async-to-module-method": "^6.5.2",

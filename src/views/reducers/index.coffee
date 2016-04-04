@@ -10,3 +10,4 @@ module.exports = combineReducers
   equip: require './equip'
   forge: require './forge'
   item: require './item'
+  battle: require './battle'
